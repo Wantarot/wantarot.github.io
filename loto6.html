@@ -21,8 +21,10 @@
         }
         .number-profile-table th:nth-child(1), .number-profile-table td:nth-child(1) { width: 15%; }
         .number-profile-table th:nth-child(2), .number-profile-table td:nth-child(2) { width: 20%; }
-        .number-profile-table th:nth-child(3), .number-profile-table td:nth-child(3) { width: 25%; }
-        .number-profile-table th:nth-child(4), .number-profile-table td:nth-child(4) { width: 40%; }
+        .number-profile-table th:nth-child(3), .number-profile-table td:nth-child(3) { width: 20%; }
+        .number-profile-table th:nth-child(4), .number-profile-table td:nth-child(4) { width: 20%; }
+        .number-profile-table th:nth-child(5), .number-profile-table td:nth-child(5) { width: 25%; }
+
 
         .pattern-table th:nth-child(1), .pattern-table td:nth-child(1) { width: 60%; }
         .pattern-table th:nth-child(2), .pattern-table td:nth-child(2) { width: 40%; }
@@ -50,6 +52,11 @@
             font-weight: bold;
             color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .candidate-reason {
+            font-size: 0.75rem; /* text-xs */
+            color: #4b5563; /* text-gray-600 */
+            margin-left: 8px;
         }
     </style>
 </head>
@@ -95,70 +102,56 @@
                                     <th>数字</th>
                                     <th>出現回数</th>
                                     <th>出現率</th>
-                                    <th>最終出現からの経過回数</th>
+                                    <th>最終出現から<br>の経過回数</th>
+                                    <th>スコア<br>(注目度)</th>
                                 </tr>
                             </thead>
                             <tbody id="numberProfileBody"></tbody>
                         </table>
                     </div>
-                    </section>
+                </section>
                 
                 <section id="recommendationSection">
                     <h2 class="section-title">3. 過去データに基づく推奨数字候補</h2>
-                    <p class="text-sm text-slate-600 mb-4">注意: これらの数字は過去のデータ傾向に基づくもので、将来の当選を保証するものではありません。あくまで数字選びの参考としてください。</p>
+                    <p class="text-sm text-slate-600 mb-4">注意: これらの数字は過去のデータ傾向に基づくもので、将来の当選を保証するものではありません。あくまで数字選びの参考としてください。スコアは出現回数、前回との関連、下一桁傾向などを複合的に評価したものです。</p>
                     
                     <div class="mb-6">
                         <h3 class="text-xl font-semibold text-sky-600 mb-3">削除を検討できる数字候補 (20個)</h3>
-                        <p class="text-xs text-slate-500 mb-2">過去のデータで出現回数が少なかった数字です。</p>
-                        <div id="removalCandidates" class="flex flex-wrap justify-center p-3 bg-slate-50 rounded-lg border border-slate-200"></div>
+                        <p class="text-xs text-slate-500 mb-2">過去のデータや傾向から総合的に評価し、注目度が低いと判断された数字です。</p>
+                        <div id="removalCandidates" class="flex flex-wrap justify-start p-3 bg-slate-50 rounded-lg border border-slate-200"></div>
                     </div>
                     
                     <div>
                         <h3 class="text-xl font-semibold text-sky-600 mb-3">注目すべき数字候補 (6個)</h3>
-                        <p class="text-xs text-slate-500 mb-2">過去のデータで出現回数が多かった数字です。</p>
-                        <div id="focusCandidates" class="flex flex-wrap justify-center p-3 bg-slate-50 rounded-lg border border-slate-200"></div>
+                        <p class="text-xs text-slate-500 mb-2">過去のデータや傾向から総合的に評価し、注目度が高いと判断された数字です。</p>
+                        <div id="focusCandidates" class="flex flex-wrap justify-start p-3 bg-slate-50 rounded-lg border border-slate-200"></div>
                     </div>
                 </section>
 
                 <section id="sumAnalysisSection">
                     <h2 class="section-title">4. 当選番号の合計値分析</h2>
                     <div id="sumStats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                        <div class="p-4 bg-sky-50 rounded-lg shadow text-center">
-                            <p class="text-sm text-slate-500">最小合計値</p> <p id="minSum" class="text-2xl font-semibold text-sky-700">-</p>
-                        </div>
-                        <div class="p-4 bg-sky-50 rounded-lg shadow text-center">
-                            <p class="text-sm text-slate-500">最大合計値</p> <p id="maxSum" class="text-2xl font-semibold text-sky-700">-</p>
-                        </div>
-                        <div class="p-4 bg-sky-50 rounded-lg shadow text-center">
-                            <p class="text-sm text-slate-500">平均合計値</p> <p id="avgSum" class="text-2xl font-semibold text-sky-700">-</p>
-                        </div>
+                        <div class="p-4 bg-sky-50 rounded-lg shadow text-center"><p class="text-sm text-slate-500">最小合計値</p><p id="minSum" class="text-2xl font-semibold text-sky-700">-</p></div>
+                        <div class="p-4 bg-sky-50 rounded-lg shadow text-center"><p class="text-sm text-slate-500">最大合計値</p><p id="maxSum" class="text-2xl font-semibold text-sky-700">-</p></div>
+                        <div class="p-4 bg-sky-50 rounded-lg shadow text-center"><p class="text-sm text-slate-500">平均合計値</p><p id="avgSum" class="text-2xl font-semibold text-sky-700">-</p></div>
                     </div>
                     <h3 class="text-lg font-medium text-slate-700 mb-2">合計値の分布</h3>
                     <div class="overflow-x-auto bg-white p-1 rounded-lg shadow">
-                        <table class="min-w-full result-table pattern-table">
-                            <thead><tr><th>合計値範囲</th><th>出現回数</th></tr></thead>
-                            <tbody id="sumDistributionBody"></tbody>
-                        </table>
+                        <table class="min-w-full result-table pattern-table"><thead><tr><th>合計値範囲</th><th>出現回数</th></tr></thead><tbody id="sumDistributionBody"></tbody></table>
                     </div>
                 </section>
 
                 <section id="evenOddSection">
                     <h2 class="section-title">5. 偶数・奇数バランス分析</h2>
                      <div class="overflow-x-auto bg-white p-1 rounded-lg shadow">
-                        <table class="min-w-full result-table pattern-table">
-                            <thead><tr><th>偶数 : 奇数 (個数)</th><th>出現回数</th></tr></thead>
-                            <tbody id="evenOddBody"></tbody>
-                        </table>
+                        <table class="min-w-full result-table pattern-table"><thead><tr><th>偶数 : 奇数 (個数)</th><th>出現回数</th></tr></thead><tbody id="evenOddBody"></tbody></table>
                     </div>
                 </section>
 
                 <section id="highLowSection">
                     <h2 class="section-title">6. 大小バランス分析 (小:1-21, 大:22-43)</h2>
                     <div class="overflow-x-auto bg-white p-1 rounded-lg shadow">
-                        <table class="min-w-full result-table pattern-table">
-                            <thead><tr><th>小 : 大 (個数)</th><th>出現回数</th></tr></thead>
-                            <tbody id="highLowBody"></tbody>
-                        </table>
+                        <table class="min-w-full result-table pattern-table"><thead><tr><th>小 : 大 (個数)</th><th>出現回数</th></tr></thead><tbody id="highLowBody"></tbody></table>
                     </div>
                 </section>
             </div>
@@ -178,9 +171,8 @@
 
         const analysisCountP = document.getElementById('analysisCount');
         const numberProfileBody = document.getElementById('numberProfileBody');
-        // const numberRankingBody = document.getElementById('numberRankingBody'); // 削除
         const removalCandidatesDiv = document.getElementById('removalCandidates'); 
-        const focusCandidatesDiv = document.getElementById('focusCandidates'); // ID修正
+        const focusCandidatesDiv = document.getElementById('focusCandidates');
 
         const minSumP = document.getElementById('minSum');
         const maxSumP = document.getElementById('maxSum');
@@ -190,18 +182,15 @@
         const highLowBody = document.getElementById('highLowBody');
 
         analyzeButton.addEventListener('click', () => {
-            // 結果表示エリアをクリア
             errorMessageDiv.textContent = '';
             extractedInfoDiv.textContent = '';
             resultsContainer.classList.add('hidden');
             numberProfileBody.innerHTML = '';
-            // if (numberRankingBody) numberRankingBody.innerHTML = ''; // 削除
             if (removalCandidatesDiv) removalCandidatesDiv.innerHTML = '';
             if (focusCandidatesDiv) focusCandidatesDiv.innerHTML = '';
             if (sumDistributionBody) sumDistributionBody.innerHTML = '';
             if (evenOddBody) evenOddBody.innerHTML = '';
             if (highLowBody) highLowBody.innerHTML = '';
-
 
             const rawInput = pastDrawsTextarea.value;
             if (!rawInput.trim()) {
@@ -210,7 +199,7 @@
             }
 
             const lines = rawInput.split('\n');
-            const parsedDraws = [];
+            const parsedDraws = []; // 最新の抽選がインデックス0に来るようにする
             const lineRegex = /^-?\s*第\s*\d+\s*回:\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*$/;
 
             for (let i = 0; i < lines.length; i++) {
@@ -224,16 +213,7 @@
                         parseInt(match[4], 10), parseInt(match[5], 10), parseInt(match[6], 10)
                     ];
                     if (numbers.every(n => n >= 1 && n <= 43) && new Set(numbers).size === 6) {
-                        // 当選番号はソートせずに、入力された順（最新が先頭）で格納することも検討できるが、
-                        // 分析内容によってはソート済みが便利なため、ここではソートしておく。
-                        // 最終出現の計算のためには入力順（最新が先頭）が重要なので、
-                        // performAnalysisに渡す前に、入力の順番を維持する。
-                        // ここでのソートは、各回の当選番号内部の表示用ではなく、 Set での重複チェックや、
-                        // 後の分析でソート済みが必要な場合に備えるため。
-                        // ただし、parsedDraws に格納するのは、入力から得たそのままの順の6つの数字で良い。
-                        // performAnalysis内で必要に応じてソートする。
-                        // いや、各当選回の数字はソートして格納するのが一般的か。
-                         parsedDraws.push(numbers.sort((a, b) => a - b)); // 各回の数字をソートして格納
+                         parsedDraws.push(numbers); // 各回の数字はソートせず、入力された組のまま格納
                     } else {
                         errorMessageDiv.textContent = `エラー (${i + 1}行目): "${line}" の数字が無効です (1-43の範囲外、または重複あり)。`;
                         return; 
@@ -251,27 +231,51 @@
             if (errorMessageDiv.textContent) return;
             
             extractedInfoDiv.textContent = `${parsedDraws.length} 回分の当選番号データを抽出しました。`;
-            performAnalysis(parsedDraws); // parsedDrawsは入力順（最新が先頭）で渡される
+            performAnalysis(parsedDraws); 
             resultsContainer.classList.remove('hidden');
         });
 
-        function performAnalysis(draws) { // draws[0]が最新のデータと想定
+        function performAnalysis(draws) { // draws[0]が最新のデータ
             const numDraws = draws.length;
             analysisCountP.textContent = `分析対象の抽選回数: ${numDraws} 回`;
 
             const numberStats = Array.from({ length: 43 }, (_, i) => ({
                 number: i + 1,
                 count: 0,
-                lastSeenDrawIndex: -1,
-                percentage: 0
+                lastSeenDrawIndex: -1, // 0が最新回
+                percentage: 0,
+                isPrevDrawNumber: false,    // 前回当選番号か
+                isPrevDrawNeighbor: false, // 前回当選番号の隣か
+                lastDigit: (i + 1) % 10,
+                score: 0 // 総合的な注目度スコア
             }));
 
+            // --- 前回情報の集計 ---
+            const prevDrawNumbers = numDraws > 0 ? new Set(draws[0]) : new Set();
+            const prevDrawNeighbors = new Set();
+            if (numDraws > 0) {
+                draws[0].forEach(num => {
+                    if (num - 1 >= 1) prevDrawNeighbors.add(num - 1);
+                    if (num + 1 <= 43) prevDrawNeighbors.add(num + 1);
+                });
+            }
+            
+            // --- 下一桁の出現回数集計 ---
+            const lastDigitCounts = Array(10).fill(0);
+            draws.forEach(draw => {
+                draw.forEach(num => {
+                    lastDigitCounts[num % 10]++;
+                });
+            });
+            const totalDigitsAppeared = lastDigitCounts.reduce((sum, count) => sum + count, 0);
+
+
+            // --- 各数字の統計情報とスコア計算の準備 ---
             draws.forEach((draw, drawIndex) => { 
                 draw.forEach(num => {
                     if (num >= 1 && num <= 43) {
                         const stat = numberStats[num - 1];
                         stat.count++;
-                        // lastSeenDrawIndex は小さいほど新しいので、より小さい値を保持
                         if (stat.lastSeenDrawIndex === -1 || drawIndex < stat.lastSeenDrawIndex) {
                             stat.lastSeenDrawIndex = drawIndex;
                         }
@@ -281,11 +285,37 @@
 
             numberStats.forEach(stat => {
                 stat.percentage = numDraws > 0 ? (stat.count / numDraws) * 100 : 0;
+                if (prevDrawNumbers.has(stat.number)) {
+                    stat.isPrevDrawNumber = true;
+                }
+                if (prevDrawNeighbors.has(stat.number)) {
+                    stat.isPrevDrawNeighbor = true;
+                }
+
+                // スコア計算 (簡易的な重み付け)
+                stat.score = stat.count * 2; // 出現回数を重視
+                if (stat.lastSeenDrawIndex !== -1) {
+                     // 直近に出ているほどスコア微増 (例: 最新なら+5, 1回前なら+4, ... 5回前まで)
+                    if (stat.lastSeenDrawIndex < 5) {
+                         stat.score += (5 - stat.lastSeenDrawIndex);
+                    }
+                } else {
+                    stat.score -= 5; // 未出現はマイナス
+                }
+
+                if (stat.isPrevDrawNumber) stat.score += 5; // 前回当選番号ならボーナス
+                if (stat.isPrevDrawNeighbor) stat.score += 3; // 前回当選番号の隣ならボーナス
+                
+                // 下一桁スコア (出現率に応じてボーナス)
+                const digitFreq = totalDigitsAppeared > 0 ? (lastDigitCounts[stat.lastDigit] / totalDigitsAppeared) : 0;
+                stat.score += digitFreq * 10; // 下一桁の出現頻度もスコアに加味
             });
 
-            // 2. 各数字の出現プロファイル (数字順)
-            numberProfileBody.innerHTML = ''; // ここでクリア
-            numberStats.forEach(item => { // numberStatsは数字順になっている
+
+            // --- 各数字の出現プロファイル表示 (スコアも表示) ---
+            const sortedByNumberForProfile = [...numberStats]; // 数字順で表示するためコピー
+            numberProfileBody.innerHTML = '';
+            sortedByNumberForProfile.forEach(item => {
                 const row = numberProfileBody.insertRow();
                 row.insertCell().textContent = item.number;
                 row.insertCell().textContent = item.count;
@@ -299,42 +329,36 @@
                     roundsSinceLastSeenText = roundsAgo === 0 ? '最新回' : `${roundsAgo} 回前`;
                 }
                 row.insertCell().textContent = roundsSinceLastSeenText;
+                row.insertCell().textContent = item.score.toFixed(1); // スコア表示
             });
 
-            // 出現回数ランキングテーブルは削除したので、関連処理も削除
+            // --- 推奨数字候補の選定 (スコアに基づいて) ---
+            const sortedByScore = [...numberStats].sort((a, b) => b.score - a.score); // スコア降順
 
-            // 3. 推奨数字候補
-            const rankedStats = [...numberStats].sort((a, b) => { // 出現回数降順ソート
-                if (b.count === a.count) return a.number - b.number;
-                return b.count - a.count;
-            });
-
-            const removalSorted = [...numberStats].sort((a, b) => { // 出現回数昇順ソート
-                if (a.count === b.count) return a.number - b.number;
-                return a.count - b.count;
-            });
-            
-            if (removalCandidatesDiv) removalCandidatesDiv.innerHTML = ''; // ここでクリア
-            removalSorted.slice(0, 20).forEach(item => {
+            if (removalCandidatesDiv) removalCandidatesDiv.innerHTML = '';
+            sortedByScore.slice(-20).reverse().forEach(item => { // スコア下位20個 (表示は見やすいように昇順に戻す)
                 const ball = document.createElement('div');
                 ball.className = 'candidate-number bg-red-500';
                 ball.textContent = item.number;
-                ball.title = `出現: ${item.count}回`;
+                ball.title = `スコア: ${item.score.toFixed(1)}, 出現: ${item.count}回`;
                 if (removalCandidatesDiv) removalCandidatesDiv.appendChild(ball);
             });
 
-            if (focusCandidatesDiv) focusCandidatesDiv.innerHTML = ''; // ここでクリア
-            rankedStats.slice(0, 6).forEach(item => {
+            if (focusCandidatesDiv) focusCandidatesDiv.innerHTML = '';
+            sortedByScore.slice(0, 6).forEach(item => { // スコア上位6個
                 const ball = document.createElement('div');
                 ball.className = 'candidate-number bg-green-500';
                 ball.textContent = item.number;
-                ball.title = `出現: ${item.count}回`;
+                ball.title = `スコア: ${item.score.toFixed(1)}, 出現: ${item.count}回`;
                 if (focusCandidatesDiv) focusCandidatesDiv.appendChild(ball);
             });
 
 
-            // 4. 当選番号の合計値分析
-            const sums = draws.map(draw => draw.reduce((acc, val) => acc + val, 0));
+            // --- 合計値、偶数奇数、大小バランスの分析 (既存のまま) ---
+            const sums = draws.map(draw => {
+                // 各回の当選番号はソートされていない可能性があるので、合計前にソートは不要
+                return draw.reduce((acc, val) => acc + val, 0);
+            });
             if (sums.length > 0) {
                 minSumP.textContent = Math.min(...sums);
                 maxSumP.textContent = Math.max(...sums);
@@ -358,33 +382,31 @@
                     }
                 }
             });
-            if (sumDistributionBody) sumDistributionBody.innerHTML = ''; // ここでクリア
+            if (sumDistributionBody) sumDistributionBody.innerHTML = ''; 
             for (const rangeKey in sumDistribution) {
                 const row = sumDistributionBody.insertRow();
                 row.insertCell().textContent = rangeKey;
                 row.insertCell().textContent = sumDistribution[rangeKey];
             }
 
-            // 5. 偶数・奇数バランス分析
             const evenOddPatterns = {"0:6":0,"1:5":0,"2:4":0,"3:3":0,"4:2":0,"5:1":0,"6:0":0};
             draws.forEach(draw => {
                 const evenCount = draw.filter(num => num % 2 === 0).length;
                 evenOddPatterns[`${evenCount}:${6-evenCount}`]++;
             });
-            if (evenOddBody) evenOddBody.innerHTML = ''; // ここでクリア
+            if (evenOddBody) evenOddBody.innerHTML = '';
             for (const pattern in evenOddPatterns) {
                 const row = evenOddBody.insertRow();
                 row.insertCell().textContent = `偶${pattern.split(':')[0]} : 奇${pattern.split(':')[1]}`;
                 row.insertCell().textContent = evenOddPatterns[pattern];
             }
 
-            // 6. 大小バランス分析
             const highLowPatterns = {"0:6":0,"1:5":0,"2:4":0,"3:3":0,"4:2":0,"5:1":0,"6:0":0};
             draws.forEach(draw => {
                 const lowCount = draw.filter(num => num >= 1 && num <= 21).length;
                 highLowPatterns[`${lowCount}:${6-lowCount}`]++;
             });
-            if (highLowBody) highLowBody.innerHTML = ''; // ここでクリア
+            if (highLowBody) highLowBody.innerHTML = '';
             for (const pattern in highLowPatterns) {
                 const row = highLowBody.insertRow();
                 row.insertCell().textContent = `小${pattern.split(':')[0]} : 大${pattern.split(':')[1]}`;
