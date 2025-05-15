@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 あなたの恋の現在地と、次の一歩を見つける 恋愛おみくじ 🌸</title>
+    <style>
+        body {
+            font-family: 'Hiragino Sans', 'ヒラギノ角ゴシック', 'メイリオ', Meiryo, 'MS PGothic', 'ＭＳ Ｐゴシック', sans-serif;
+            background-color: #fff0f5; /* 淡いピンク系の背景 */
+            color: #5d4037; /* 落ち着いたブラウン系の文字色 */
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 上寄せ */
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d81b60; /* やや濃いピンク */
+            font-size: 1.6em;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #880e4f; /* さらに濃いピンク */
+            font-size: 1.3em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .question-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #795548; /* 少し濃いめのブラウン */
+        }
+
+        .options-group label {
+            display: block;
+            margin-bottom: 8px;
+            padding: 10px;
+            background-color: #fce4ec; /* 薄いピンク */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .options-group label:hover {
+            background-color: #f8bbd0; /* 少し濃いピンク */
+        }
+
+        .options-group input[type="radio"] {
+            margin-right: 10px;
+            display: none; /* ラジオボタン自体は隠す */
+        }
+        /* カスタムラジオボタン風 */
+        .options-group label::before {
+            content: "♡"; /* 未選択時のハート */
+            display: inline-block;
+            margin-right: 8px;
+            color: #e91e63; /* ピンク */
+        }
+        .options-group input[type="radio"]:checked + label::before {
+            content: "💖"; /* 選択時の輝くハート */
+            color: #c2185b;
+        }
+        .options-group input[type="radio"]:checked + label {
+            background-color: #f48fb1; /* 濃いめのピンク */
+            color: #fff;
+            font-weight: bold;
+        }
+
+
+        button {
+            background-color: #ec407a; /* メインのピンク */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px; /* 丸みを帯びたボタン */
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #d81b60; /* 少し濃いピンク */
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #resultSection {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff8f2; /* 温かみのあるクリーム色 */
+            border-radius: 8px;
+            border: 1px solid #ffe0b2; /* オレンジがかった線 */
+        }
+
+        .unsei-rank {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #c2185b; /* 濃いピンク */
+            margin-bottom: 15px;
+        }
+
+        .result-message p {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .message-intro {
+            font-size: 1.1em;
+            color: #7b1fa2; /* 紫系でアクセント */
+        }
+        .message-details {
+            margin-top: 15px;
+            padding-left: 10px;
+            border-left: 3px solid #ffc107; /* 黄色系のアクセントライン */
+        }
+        .message-details p:first-child { /* "今のあなたは…"など */
+            font-weight: bold;
+            color: #ad1457; /* 強調のピンク */
+        }
+
+        .footer-message {
+            margin-top: 20px;
+            font-style: italic;
+            color: #8d6e63; /* ブラウン系 */
+        }
+
+        #resetButton {
+            background-color: #7cb342; /* グリーン系 */
+        }
+        #resetButton:hover {
+            background-color: #558b2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 あなたの恋の現在地と、次の一歩を見つける 恋愛おみくじ 🌸</h1>
+
+        <div id="questionsSection">
+            <div class="question-group">
+                <p id="question1Text" class="question-text"></p>
+                <div id="question1Options" class="options-group">
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p id="question2Text" class="question-text"></p>
+                <div id="question2Options" class="options-group">
+                </div>
+            </div>
+
+            <button id="drawButton">おみくじを引く</button>
+            <p id="userFeedback" style="color: red; margin-top: 10px;"></p> </div>
+
+        <div id="resultSection" class="hidden">
+            <h2>--- 恋愛おみくじの結果 ---</h2>
+            <p class="unsei-rank">【あなたの恋の運勢：<span id="unseiRank"></span>】</p>
+            
+            <div class="result-message">
+                <p class="message-intro">💌 <span id="resultIntro"></span></p>
+                <div class="message-details">
+                    <p><strong>今のあなたは…</strong></p>
+                    <p id="resultRecognition"></p>
+                </div>
+                <div class="message-details">
+                    <p><strong>次の一歩のヒント✨</strong></p>
+                    <p id="resultStep"></p>
+                </div>
+                <div class="message-details">
+                    <p><strong>未来へのメッセージ</strong></p>
+                    <p id="resultHope"></p>
+                </div>
+            </div>
+            <p class="footer-message">この結果が、あなたの素敵な恋の一助となりますように。</p>
+            <button id="resetButton">もう一度引く</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- データ定義 ---
+            const questionsSky = {
+                q_id: "sky",
+                text: "今、あなたの心はどんな空模様？",
+                options: {
+                    "1": "快晴",
+                    "2": "晴れ時々曇り",
+                    "3": "曇り空",
+                    "4": "小雨",
+                    "5": "嵐の気配"
+                }
+            };
+
+            const questionsConcern = {
+                q_id: "concern",
+                text: "そっと胸に手を当ててみて。今、一番気になるのはどんなこと？",
+                options: {
+                    "1": "新しい風を感じたい（出会い・変化）",
+                    "2": "あの人との物語を進めたい（特定の相手）",
+                    "3": "もっと自分を好きになりたい（自己肯定感）",
+                    "4": "穏やかな愛を育みたい（関係性の安定・深化）"
+                }
+            };
+
+            const omikujiResults = {
+                "大吉": [
+                    {
+                        "id": "daikichi_01",
+                        "intro": "まるで祝福の光が降り注ぐように、あなたの心は今、輝きに満ちていますね。",
+                        "recognition": "これまであなたが大切に育んできた想いや努力が、素晴らしい形で花開こうとしています。まるで物語のクライマックスが近づいているような、そんなワクワクする予感がしませんか？",
+                        "step": "その素晴らしいエネルギーを、思い切って表現してみましょう。笑顔で挨拶する、感謝の言葉を伝える、そんな小さな一歩が、想像以上の大きな喜びを引き寄せる鍵になります。",
+                        "hope": "大丈夫、あなたは愛される価値のある存在です。自信を持って、素晴らしい恋の物語を紡いでいってくださいね。"
+                    },
+                    {
+                        "id": "daikichi_02",
+                        "intro": "心が晴れ渡り、まるで新しい世界の扉が開いたような清々しい気持ちでいっぱいなのではありませんか？",
+                        "recognition": "あなたの内なる魅力が最大限に輝き、周囲の人々を自然と惹きつけるでしょう。今まで気づかなかった自分の新たな一面を発見するかもしれませんね。それは、あなたが成長した証です。",
+                        "step": "新しいことを始めるのに最適な時です。興味のあることに挑戦したり、普段行かない場所へ足を運んでみたり。その行動が、素敵な出会いや関係の進展に繋がるでしょう。",
+                        "hope": "あなたの未来は、無限の可能性に満ちています。恐れずに、心のコンパスが指し示す方へ進んでください。応援しています。"
+                    }
+                ],
+                "中吉": [
+                    {
+                        "id": "chukichi_01",
+                        "intro": "優しい陽だまりの中にいるような、穏やかで温かい気持ちが心を包んでいるのを感じます。",
+                        "recognition": "焦らず、今の心地よさを大切にしてください。あなたのペースで進むことが、確かな幸せへと繋がっています。日々の小さな出来事の中に、愛おしい瞬間がたくさん隠れていますよ。",
+                        "step": "親しい友人や家族と、心温まる時間を過ごしてみてはいかがでしょう。リラックスした会話の中に、恋を進めるヒントや、自分自身への気づきが見つかるかもしれません。",
+                        "hope": "あなたの穏やかな魅力は、安心感を求める人にとって何よりの宝物。ゆっくりと、でも着実に、愛を育んでいけるでしょう。"
+                    },
+                    {
+                        "id": "chukichi_02",
+                        "intro": "少しずつ霧が晴れて、進むべき道がうっすらと見えてきたような、そんな感覚があるかもしれませんね。",
+                        "recognition": "今は、自分自身と向き合い、内なる声に耳を澄ませる時。あなたが本当に望んでいることは何なのか、心と対話することで、よりクリアな答えが見つかるはずです。",
+                        "step": "日記をつけたり、瞑想をしたりするのも良いでしょう。あるいは、信頼できる人に話を聞いてもらうのも一つの方法です。心の整理をすることで、新しいエネルギーが湧いてきますよ。",
+                        "hope": "あなたの物語は、これから新しい章へと進みます。そのための準備期間だと思って、自分を大切にしてくださいね。必ず道は開けます。"
+                    }
+                ],
+                "小吉": [
+                    {
+                        "id": "shokichi_01",
+                        "intro": "窓から差し込む柔らかな光のように、ささやかな希望があなたの心を照らし始めているのを感じます。",
+                        "recognition": "大きな変化を求めるよりも、今ある日常の中に隠された小さな幸せやサインに気づくことが大切です。足元に咲く花のように、見過ごしがちな美しさがすぐそばにあるかもしれません。",
+                        "step": "いつもより少しだけ周りをよく観察してみてください。感謝の気持ちを言葉にしたり、小さな親切を心がけたりすることで、良い運気の流れを引き寄せることができます。",
+                        "hope": "派手さはないかもしれませんが、じんわりと心に染みるような温かい出来事が待っているでしょう。あなたの優しい眼差しが、愛を引き寄せます。"
+                    }
+                ],
+                "末吉": [
+                    {
+                        "id": "suekichi_01",
+                        "intro": "今は少し立ち止まって、自分の心とじっくり向き合う時間が必要なのかもしれませんね。",
+                        "recognition": "焦りや不安を感じることもあるかもしれませんが、それはあなたが真剣に恋と向き合っている証拠。この時間は、次へ進むための大切な準備期間と捉えてみましょう。",
+                        "step": "好きな音楽を聴いたり、美味しいものを食べたり、自分自身を労わることを優先してください。心の栄養が満たされれば、自然と新しい道が見えてくるはずです。",
+                        "hope": "雨上がりの虹のように、今の時期を乗り越えた先には、きっと素晴らしい景色が待っています。自分を信じて、ゆっくり進んでくださいね。"
+                    }
+                ],
+                // 特定の組み合わせに対する定義は残しておいても良いですが、
+                // getOmikujiResult関数で参照しないように変更します。
+                // 例として残しておきますが、実際にはこの部分は無視されます。
+                "快晴_新しい風を感じたい": [
+                    {
+                        "unsei": "大吉", // この定義は使われなくなります
+                        "intro": "（このメッセージは表示されません）心が突き抜けるような青空ですね！...",
+                        "recognition": "（このメッセージは表示されません）あなたのポジティブなエネルギーが...",
+                        "step": "（このメッセージは表示されません）直感を信じて...",
+                        "hope": "（このメッセージは表示されません）キラキラと輝く未来が..."
+                    }
+                ],
+                "曇り空_もっと自分を好きになりたい": [
+                    {
+                        "unsei": "中吉", // この定義は使われなくなります
+                        "intro": "（このメッセージは表示されません）心に少し雲が...",
+                        "recognition": "（このメッセージは表示されません）今は、外に求めるよりも...",
+                        "step": "（このメッセージは表示されません）小さな成功体験を...",
+                        "hope": "（このメッセージは表示されません）雲の切れ間から光が..."
+                    }
+                ]
+            };
+
+            // --- DOM要素取得 ---
+            const question1TextEl = document.getElementById('question1Text');
+            const question1OptionsEl = document.getElementById('question1Options');
+            const question2TextEl = document.getElementById('question2Text');
+            const question2OptionsEl = document.getElementById('question2Options');
+            const drawButton = document.getElementById('drawButton');
+            const questionsSection = document.getElementById('questionsSection');
+            const resultSection = document.getElementById('resultSection');
+            
+            const unseiRankEl = document.getElementById('unseiRank');
+            const resultIntroEl = document.getElementById('resultIntro');
+            const resultRecognitionEl = document.getElementById('resultRecognition');
+            const resultStepEl = document.getElementById('resultStep');
+            const resultHopeEl = document.getElementById('resultHope');
+            const resetButton = document.getElementById('resetButton');
+            const userFeedbackEl = document.getElementById('userFeedback');
+
+
+            // --- 関数定義 ---
+            function populateQuestion(questionData, textEl, optionsEl) {
+                textEl.textContent = questionData.text;
+                optionsEl.innerHTML = ''; 
+
+                for (const key in questionData.options) {
+                    const optionValue = questionData.options[key];
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = questionData.q_id;
+                    input.value = key;
+                    input.id = `${questionData.q_id}_${key}`;
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `${questionData.q_id}_${key}`;
+                    label.textContent = optionValue;
+                    
+                    optionsEl.appendChild(input);
+                    optionsEl.appendChild(label);
+                }
+            }
+
+            function getSelectedAnswer(questionName) {
+                const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+                return selected ? selected.value : null;
+            }
+
+            function getOmikujiResult(skyAnsKey, concernAnsKey) {
+                // 特定の組み合わせによる結果の固定を排除します。
+                // 常に基本運勢からランダムに選択します。
+
+                const possibleUnsei = ["大吉", "中吉", "小吉", "末吉"];
+                const randomIndex = Math.floor(Math.random() * possibleUnsei.length);
+                const chosenUnseiRank = possibleUnsei[randomIndex];
+                
+                if (omikujiResults[chosenUnseiRank] && omikujiResults[chosenUnseiRank].length > 0) {
+                    // 選ばれた運勢の中から、さらにランダムにメッセージを選択
+                    const resultCandidate = omikujiResults[chosenUnseiRank][Math.floor(Math.random() * omikujiResults[chosenUnseiRank].length)];
+                    // 運勢情報を明示的に付与して返す
+                    return { ...resultCandidate, unsei: chosenUnseiRank };
+                }
+
+                // 万が一、適切な結果が見つからなかった場合のフォールバック
+                // (通常、omikujiResultsの定義が正しければここには到達しません)
+                console.warn("適切な結果が見つかりませんでした。フォールバック結果を表示します。");
+                return {
+                    unsei: "平穏", // フォールバック用の運勢
+                    intro: "穏やかな一日になりそうです。",
+                    recognition: "今のあなたに必要なのは、心の平穏かもしれません。",
+                    step: "深呼吸をして、リラックスしましょう。",
+                    hope: "静けさの中に、新しい発見があるでしょう。"
+                };
+            }
+
+            function displayResult(result) {
+                unseiRankEl.textContent = result.unsei || '---';
+                resultIntroEl.textContent = result.intro;
+                resultRecognitionEl.innerHTML = result.recognition.replace(/\n/g, '<br>');
+                resultStepEl.innerHTML = result.step.replace(/\n/g, '<br>');
+                resultHopeEl.innerHTML = result.hope.replace(/\n/g, '<br>');
+
+                questionsSection.classList.add('hidden');
+                resultSection.classList.remove('hidden');
+            }
+
+            // --- 初期化処理 ---
+            populateQuestion(questionsSky, question1TextEl, question1OptionsEl);
+            populateQuestion(questionsConcern, question2TextEl, question2OptionsEl);
+
+            // --- イベントリスナー ---
+            drawButton.addEventListener('click', () => {
+                userFeedbackEl.textContent = ""; // 前回のメッセージをクリア
+                const skyAnswer = getSelectedAnswer('sky');
+                const concernAnswer = getSelectedAnswer('concern');
+
+                if (!skyAnswer || !concernAnswer) {
+                    userFeedbackEl.textContent = "両方の質問に答えてくださいね。";
+                    return;
+                }
+
+                // skyAnswer と concernAnswer は getOmikujiResult に渡しますが、
+                // 関数内でこれらの値は使用されなくなります。
+                const finalResult = getOmikujiResult(skyAnswer, concernAnswer);
+                displayResult(finalResult);
+            });
+
+            resetButton.addEventListener('click', () => {
+                userFeedbackEl.textContent = ""; // メッセージをクリア
+                questionsSection.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+                document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+            });
+        });
+    </script>
+</body>
+</html>
