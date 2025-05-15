@@ -58,14 +58,14 @@
     <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-4xl transform transition-all duration-500 hover:scale-[1.005]">
         <header class="mb-6 sm:mb-8 text-center">
             <h1 class="text-3xl sm:text-4xl font-bold text-sky-700">ロト6統計的プロファイリングツール</h1>
-            <p class="text-slate-600 mt-2 text-sm sm:text-base">過去の当選番号データを様々な形式で入力して、詳細な統計情報を分析します。</p>
+            <p class="text-slate-600 mt-2 text-sm sm:text-base">過去の当選番号データを指定形式で入力して、詳細な統計情報を分析します。</p>
         </header>
 
         <main>
             <div class="mb-6">
-                <label for="pastDraws" class="block text-sm font-medium text-slate-700 mb-1">過去の当選番号データ:</label>
-                <textarea id="pastDraws" rows="10" class="w-full p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors duration-300 resize-y" placeholder="様々な形式の当選番号データを貼り付けてください。当選番号と思われる6つの数字の組を抽出します。\n例1: 第1995回2025/5/10 020408262737 19 ...\n例2: 02 04 08 26 27 37, 10 11 13 16 24 26, ...\n例3: 1995回 2 4 8 26 27 37 (ボーナス19)\n      1994回 10,11,13,16,24,26 (ボーナス12)"></textarea>
-                <p class="text-xs text-slate-500 mt-1">当選番号（本数字6個）を抽出します。日付、回号、ボーナス番号、賞金情報などが含まれていても構いません。</p>
+                <label for="pastDraws" class="block text-sm font-medium text-slate-700 mb-1">過去の当選番号データ (指定形式):</label>
+                <textarea id="pastDraws" rows="10" class="w-full p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors duration-300 resize-y" placeholder="-第XXXX回: NN, NN, NN, NN, NN, NN\n第YYYY回: MM, MM, MM, MM, MM, MM\n(各行に1回分の当選番号を入力。最新の回から順に並べてください。)"></textarea>
+                <p class="text-xs text-slate-500 mt-1">例: `-第1995回: 02, 04, 08, 26, 27, 37` の形式で、1行に1回分のデータを入力してください。</p>
             </div>
 
             <button id="analyzeButton" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95 flex items-center justify-center">
@@ -202,116 +202,78 @@
                 return;
             }
 
+            const lines = rawInput.split('\n');
             const parsedDraws = [];
-            const uniqueDraws = new Set(); // 抽出した組み合わせの重複を防ぐ (キーは "1,2,3,4,5,6" のような文字列)
+            // ご指定の形式に特化した正規表現
+            // 例: "-第1995回: 02, 04, 08, 26, 27, 37"
+            const lineRegex = /^-?\s*第\s*\d+\s*回:\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*$/;
 
-            // 1. 特定の構造化されたフォーマットからの抽出 (例: 第...回...日付(12桁の本数字)(2桁のボーナス)...)
-            // 本数字が12桁で連続しているパターン (010203040506)
-            // 正規表現を少し緩くして、回号や日付の区切り文字を柔軟に解釈
-            const regexStructured = /第?\s*\d+\s*回?[^\d年月日]*(\d{4}[^\d年月日]*\d{1,2}[^\d年月日]*\d{1,2}[^\d年月日]*)?[^\d]*(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\d{2}/g;
-            let match;
-            while ((match = regexStructured.exec(rawInput)) !== null) {
-                const numbers = [
-                    parseInt(match[2], 10), parseInt(match[3], 10), parseInt(match[4], 10),
-                    parseInt(match[5], 10), parseInt(match[6], 10), parseInt(match[7], 10)
-                ];
-                if (numbers.every(n => n >= 1 && n <= 43) && new Set(numbers).size === 6) {
-                    const sortedChunk = numbers.slice().sort((a, b) => a - b);
-                    const drawKey = sortedChunk.join(',');
-                    if (!uniqueDraws.has(drawKey)) {
-                        parsedDraws.push(sortedChunk);
-                        uniqueDraws.add(drawKey);
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line === "") continue; // 空行はスキップ
+
+                const match = line.match(lineRegex);
+                if (match) {
+                    const numbers = [
+                        parseInt(match[1], 10), parseInt(match[2], 10), parseInt(match[3], 10),
+                        parseInt(match[4], 10), parseInt(match[5], 10), parseInt(match[6], 10)
+                    ];
+
+                    if (numbers.every(n => n >= 1 && n <= 43) && new Set(numbers).size === 6) {
+                        parsedDraws.push(numbers.sort((a, b) => a - b));
+                    } else {
+                        errorMessageDiv.textContent = `エラー (${i + 1}行目): "${line}" の数字が無効です (1-43の範囲外、または重複あり)。`;
+                        resultsContainer.classList.add('hidden');
+                        extractedInfoDiv.textContent = '';
+                        return; 
                     }
+                } else {
+                    errorMessageDiv.textContent = `エラー (${i + 1}行目): "${line}" の形式が正しくありません。\n期待される形式: "-第XXXX回: NN, NN, NN, NN, NN, NN"`;
+                    resultsContainer.classList.add('hidden');
+                    extractedInfoDiv.textContent = '';
+                    return;
                 }
             }
             
-            // 2. より汎用的な抽出ロジック
-            //    入力テキストから1-43の範囲の数字をすべて見つけ出し、
-            //    それらが6個の有効な組を形成しているかスライディングウィンドウでチェック
-            
-            // 全ての数字と思われるものを抽出 (1桁または2桁)
-            const potentialNumberStrings = rawInput.match(/\b\d{1,2}\b/g) || [];
-            const allPotentialNumbers = potentialNumberStrings
-                .map(s => parseInt(s, 10))
-                .filter(n => n >= 1 && n <= 43);
-
-            // スライディングウィンドウで6個の組を探す
-            for (let i = 0; i <= allPotentialNumbers.length - 6; i++) {
-                const chunk = allPotentialNumbers.slice(i, i + 6);
-                // 6個の数字がすべてユニークであることを確認
-                if (new Set(chunk).size === 6) {
-                    const sortedChunk = chunk.slice().sort((a, b) => a - b);
-                    const drawKey = sortedChunk.join(',');
-                    if (!uniqueDraws.has(drawKey)) {
-                        parsedDraws.push(sortedChunk);
-                        uniqueDraws.add(drawKey);
-                    }
-                }
+            if (parsedDraws.length === 0 && !errorMessageDiv.textContent) {
+                errorMessageDiv.textContent = '有効な当選番号データが見つかりませんでした。入力形式を確認してください。';
+                return;
             }
-
-            // 連結した12桁の数字 (例: 010203040506) からも抽出を試みる
-            const concatenatedRegex = /(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/g;
-            let concatMatch;
-            // 入力から数字以外の文字とスペースを削除して、数字の連続部分だけにする
-            const numbersOnlyString = rawInput.replace(/[^\d]/g, '');
-            while((concatMatch = concatenatedRegex.exec(numbersOnlyString)) !== null) {
-                 const numbers = [
-                    parseInt(concatMatch[1], 10), parseInt(concatMatch[2], 10), parseInt(concatMatch[3], 10),
-                    parseInt(concatMatch[4], 10), parseInt(concatMatch[5], 10), parseInt(concatMatch[6], 10)
-                ];
-                if (numbers.every(n => n >= 1 && n <= 43) && new Set(numbers).size === 6) {
-                    const sortedChunk = numbers.slice().sort((a, b) => a - b);
-                    const drawKey = sortedChunk.join(',');
-                    if (!uniqueDraws.has(drawKey)) {
-                        parsedDraws.push(sortedChunk);
-                        uniqueDraws.add(drawKey);
-                    }
-                }
-            }
-
-
-            if (parsedDraws.length === 0) {
-                errorMessageDiv.textContent = '有効な当選番号の組を抽出できませんでした。入力データと形式を確認してください。';
+             if (errorMessageDiv.textContent) { // ループ内でエラーが設定された場合
                 return;
             }
             
-            // 抽出された回数を表示
             extractedInfoDiv.textContent = `${parsedDraws.length} 回分の当選番号データを抽出しました。`;
-
-
-            // 統計分析の実行 (parsedDraws は抽出された順になっているはず)
-            // 抽出ロジックの特性上、parsedDrawsの順序は元のテキストの出現順とは限らない場合がある。
-            // より正確な「最終出現からの経過回数」のためには、抽出時に元のテキスト内での位置情報も考慮する必要があるが、
-            // 現在は抽出されたユニークな組のリストに対して分析を行う。
-            // ここでは、parsedDrawsが追加された順（ある程度はテキスト上の順序を反映しやすい）で分析を行う。
+            // 入力は最新のものが先頭と想定 (例: 第1995回が最初に来る)
+            // performAnalysis は draws[0] が最新のデータであることを前提に最終出現を計算
             performAnalysis(parsedDraws);
             resultsContainer.classList.remove('hidden');
         });
 
         /**
          * 統計分析を実行し、結果を表示する関数
-         * @param {number[][]} draws - 解析対象の抽選番号の配列 (例: [[1,2,3,4,5,6], [7,8,9,10,11,12]])
+         * @param {number[][]} draws - 解析対象の抽選番号の配列 (最新のものが draws[0])
          */
         function performAnalysis(draws) {
             const numDraws = draws.length;
 
-            // 1. 基本情報
             analysisCountP.textContent = `分析対象の抽選回数: ${numDraws} 回`;
 
-            // 2. 各数字の出現プロファイル
             const numberFrequency = new Array(43).fill(0).map((_, i) => ({
                 number: i + 1,
                 count: 0,
-                lastSeenDrawIndex: -1 // -1は未出現を示す。drawsのインデックスを記録
+                lastSeenDrawIndex: -1 
             }));
 
-            // draws 配列は抽出された順なので、インデックスがそのまま時系列を表す
-            // 注意：柔軟な抽出ロジックのため、厳密な時系列順でない可能性もある
-            draws.forEach((draw, drawIndex) => {
+            draws.forEach((draw, drawIndex) => { // draws[0]が最新
                 draw.forEach(num => {
                     if (num >= 1 && num <= 43) { 
                         numberFrequency[num - 1].count++;
-                        numberFrequency[num - 1].lastSeenDrawIndex = drawIndex; 
+                        if (numberFrequency[num - 1].lastSeenDrawIndex === -1 || drawIndex < numberFrequency[num - 1].lastSeenDrawIndex) {
+                             // より新しい（インデックスが小さい）出現を記録
+                             numberFrequency[num - 1].lastSeenDrawIndex = drawIndex;
+                        }
                     }
                 });
             });
@@ -327,24 +289,21 @@
                 if (item.lastSeenDrawIndex === -1) {
                     roundsSinceLastSeenText = '未出現';
                 } else {
-                    // 経過回数は (全回数 - 1) - 最後に見たインデックス
-                    const roundsAgo = (numDraws - 1) - item.lastSeenDrawIndex;
+                    // item.lastSeenDrawIndex は draws 配列中のインデックス (0 が最新回)
+                    // この値がそのまま「何回前の出現か」を示す
+                    const roundsAgo = item.lastSeenDrawIndex; 
                     roundsSinceLastSeenText = roundsAgo === 0 ? '最新回' : `${roundsAgo} 回前`;
                 }
                 row.insertCell().textContent = roundsSinceLastSeenText;
             });
 
-
-            // 3. 当選番号の合計値分析
             const sums = draws.map(draw => draw.reduce((acc, val) => acc + val, 0));
             if (sums.length > 0) {
                 minSumP.textContent = Math.min(...sums);
                 maxSumP.textContent = Math.max(...sums);
                 avgSumP.textContent = (sums.reduce((acc, val) => acc + val, 0) / sums.length).toFixed(1);
             } else {
-                minSumP.textContent = '-';
-                maxSumP.textContent = '-';
-                avgSumP.textContent = '-';
+                minSumP.textContent = '-'; maxSumP.textContent = '-'; avgSumP.textContent = '-';
             }
 
             const sumDistribution = {};
@@ -354,7 +313,6 @@
                 {min: 180, max: 243}
             ];
             sumRanges.forEach(range => sumDistribution[`${range.min}～${range.max}`] = 0);
-
             sums.forEach(sum => {
                 for (const range of sumRanges) {
                     if (sum >= range.min && sum <= range.max) {
@@ -370,14 +328,10 @@
                 row.insertCell().textContent = sumDistribution[rangeKey];
             }
 
-            // 4. 偶数・奇数バランス分析
-            const evenOddPatterns = {
-                "0:6": 0, "1:5": 0, "2:4": 0, "3:3": 0, "4:2": 0, "5:1": 0, "6:0": 0
-            };
+            const evenOddPatterns = {"0:6":0,"1:5":0,"2:4":0,"3:3":0,"4:2":0,"5:1":0,"6:0":0};
             draws.forEach(draw => {
                 const evenCount = draw.filter(num => num % 2 === 0).length;
-                const oddCount = 6 - evenCount;
-                evenOddPatterns[`${evenCount}:${oddCount}`]++;
+                evenOddPatterns[`${evenCount}:${6-evenCount}`]++;
             });
             evenOddBody.innerHTML = '';
             for (const pattern in evenOddPatterns) {
@@ -386,14 +340,10 @@
                 row.insertCell().textContent = evenOddPatterns[pattern];
             }
 
-            // 5. 大小バランス分析 (小:1-21, 大:22-43)
-            const highLowPatterns = {
-                "0:6": 0, "1:5": 0, "2:4": 0, "3:3": 0, "4:2": 0, "5:1": 0, "6:0": 0
-            };
+            const highLowPatterns = {"0:6":0,"1:5":0,"2:4":0,"3:3":0,"4:2":0,"5:1":0,"6:0":0};
             draws.forEach(draw => {
                 const lowCount = draw.filter(num => num >= 1 && num <= 21).length;
-                const highCount = 6 - lowCount;
-                highLowPatterns[`${lowCount}:${highCount}`]++;
+                highLowPatterns[`${lowCount}:${6-lowCount}`]++;
             });
             highLowBody.innerHTML = '';
             for (const pattern in highLowPatterns) {
