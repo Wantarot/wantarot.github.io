@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理想実現アルケミー・ワークベンチ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Serif JP', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4e 50%, #4a1e3c 100%); /* 深みのあるグラデーション */
+            color: #f0f0f0; /* 明るく読みやすいテキスト色 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 上寄せ */
+            min-height: 100vh;
+            padding-top: 40px; /* 上部余白 */
+            padding-bottom: 40px;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px; /* 少し幅広に */
+            background-color: rgba(35, 35, 60, 0.85); /* 半透明の背景 */
+            backdrop-filter: blur(10px); /* 背景ぼかし効果 */
+            padding: 30px 40px; /* 内側余白を調整 */
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(240, 196, 25, 0.3); /* ゴールドの細い枠線 */
+        }
+        .header h1 {
+            font-family: 'Playfair Display', serif; /* タイトル用フォント */
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #f0c419; /* ゴールド */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .header p {
+            font-size: 1.15em;
+            color: #d0d0e0;
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .step-navigation button {
+            background-color: rgba(240, 196, 25, 0.2); /* 半透明ゴールド */
+            color: #f0c419;
+            border: 1px solid #f0c419;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            margin: 0 5px;
+        }
+        .step-navigation button:hover, .step-navigation button.active {
+            background-color: #f0c419;
+            color: #1a1a2e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(240, 196, 25, 0.3);
+        }
+        .step-navigation button:disabled {
+            background-color: rgba(100, 100, 120, 0.3);
+            color: #888;
+            border-color: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .step-content {
+            padding: 25px 15px; /* コンテンツエリアのパディング */
+            border-radius: 8px;
+            margin-top: 25px;
+            background-color: rgba(26, 26, 46, 0.7); /* コンテンツ背景 */
+            min-height: 350px;
+        }
+        .step-pane { display: none; }
+        .step-pane.active { display: block; animation: fadeIn 0.7s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9em;
+            color: #f0c419;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(240, 196, 25, 0.5);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d0d0e0;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"], textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #4a4a6e;
+            border-radius: 6px;
+            background-color: rgba(26, 26, 46, 0.9); /* 入力欄背景 */
+            color: #f0f0f0;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+            border-color: #f0c419;
+            box-shadow: 0 0 8px rgba(240, 196, 25, 0.3);
+            outline: none;
+        }
+        textarea { min-height: 100px; resize: vertical; }
+        
+        .action-buttons { text-align: right; margin-top: 20px; }
+        .primary-btn {
+            background-color: #f0c419;
+            color: #1a1a2e;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .primary-btn:hover {
+            background-color: #d8af17;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 196, 25, 0.4);
+        }
+        .secondary-btn {
+            background-color: transparent;
+            color: #f0c419;
+            border: 1px solid #f0c419;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        .secondary-btn:hover {
+            background-color: rgba(240, 196, 25, 0.1);
+            transform: translateY(-1px);
+        }
+        .guidance-text {
+            background-color: rgba(240, 196, 25, 0.05); /* 薄いゴールド背景 */
+            border-left: 4px solid #f0c419;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+            color: #e0e0e0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .guidance-text strong { color: #f0c419; }
+        
+        #alchemyBoard {
+            border: 2px dashed #f0c419;
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 8px;
+            background: linear-gradient(to bottom, rgba(40,20,60,0.5), rgba(20,10,30,0.5));
+        }
+        #alchemyBoard h3 { color: #f0c419; font-size: 1.5em; margin-bottom: 15px; }
+        #alchemyBoard p { margin-bottom: 10px; line-height: 1.7; font-size: 1.05em; }
+        #alchemyBoard strong { color: #f0c419; }
+
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            background-color: #23233c; margin: 10% auto; padding: 30px; border: 1px solid #f0c419;
+            width: 90%; max-width: 600px; border-radius: 8px; text-align: left; position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        .modal-header { padding-bottom: 15px; border-bottom: 1px solid #4a4a6e; margin-bottom: 20px; }
+        .modal-header h2 { margin-bottom: 0; font-size: 1.7em; }
+        .close-btn {
+            color: #aaa; position: absolute; top: 15px; right: 25px; font-size: 32px; font-weight: bold; cursor: pointer;
+        }
+        .close-btn:hover, .close-btn:focus { color: #f0c419; text-decoration: none; }
+        .progress-bar-container {
+            width: 100%;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            height: 10px;
+        }
+        .progress-bar {
+            width: 0%; /* 初期値 */
+            height: 10px;
+            background-color: #f0c419;
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-feather-alt" style="margin-right: 12px;"></i>理想実現アルケミー・ワークベンチ</h1>
+            <p>あなたの魂が望む最高の愛を、脳と心に刻み込み、現実のものとしましょう。</p>
+        </header>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="step-navigation text-center mb-6">
+            <button id="btnStep1" class="active" onclick="goToStep(1)">ステップ1: 理想を描く</button>
+            <button id="btnStep2" onclick="goToStep(2)" disabled>ステップ2: ブロック発見</button>
+            <button id="btnStep3" onclick="goToStep(3)" disabled>ステップ3: 前提の書き換え</button>
+            <button id="btnStep4" onclick="goToStep(4)" disabled>ステップ4: 波動同調</button>
+            <button id="btnStep5" onclick="goToStep(5)" disabled>ステップ5: アルケミーボード</button>
+        </div>
+
+        <div class="step-content">
+            <div id="step1" class="step-pane active">
+                <h2><i class="fas fa-pencil-ruler" style="margin-right: 10px;"></i>ステップ1: 魂が震える理想の未来を描く</h2>
+                <div class="guidance-text">
+                    ここでは、あなたの心が本当に望む「最高の恋愛」の姿を具体的に描いていきます。<br>
+                    <strong>制限を外して、自由に、大胆に。</strong> あなたが心から「こうなったら最高！」と思える未来を言葉にしてください。
+                </div>
+                <label for="idealPartner">理想のパートナーシップ（誰と、どんな関係性ですか？）：</label>
+                <textarea id="idealPartner" placeholder="例：〇〇さんと、お互いを深く理解し合い、心からの安心感と喜びに満ちた関係を築いています。"></textarea>
+                
+                <label for="idealFeelings">その時、あなたはどんな感情を感じていますか？（複数可）：</label>
+                <input type="text" id="idealFeelings" placeholder="例：至福感、安心感、深い愛情、ワクワク感、感謝">
+                
+                <label for="idealTimeline">いつ頃までに、この理想を現実のものとしたいですか？：</label>
+                <input type="date" id="idealTimeline">
+
+                <div class="action-buttons">
+                    <button class="primary-btn" onclick="saveStep1()">次へ進む <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                </div>
+            </div>
+
+            <div id="step2" class="step-pane">
+                <h2><i class="fas fa-search" style="margin-right: 10px;"></i>ステップ2: 理想を阻む「無意識のブレーキ」を発見する</h2>
+                <div class="guidance-text">
+                    ステップ1で描いた素晴らしい理想。それに対して、心の奥底で「でも…」「本当に叶うのかな？」といった声が聞こえませんか？<br>
+                    それは、過去の経験や思い込みから生まれた「古い恋愛プログラム」かもしれません。正直に感じてみましょう。
+                </div>
+                <label for="blockReason1">その理想に対して「難しいかも」と感じる一番の理由は何ですか？</label>
+                <textarea id="blockReason1" placeholder="例：過去に同じようなタイプの人とうまくいかなかったから。"></textarea>
+
+                <label for="blockFeeling">その「難しいかも」という感覚は、どんな感情を伴いますか？</label>
+                <input type="text" id="blockFeeling" placeholder="例：不安、恐れ、無力感">
+
+                <label for="blockOrigin">その感覚は、いつ頃から持っているものだと思いますか？（具体的な出来事など）</label>
+                <textarea id="blockOrigin" placeholder="例：初めて大失恋した時から、自信が持てなくなった。"></textarea>
+                
+                <div class="action-buttons">
+                    <button class="secondary-btn" onclick="goToStep(1)"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i>戻る</button>
+                    <button class="primary-btn" onclick="saveStep2()">次へ進む <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                </div>
+            </div>
+
+            <div id="step3" class="step-pane">
+                <h2><i class="fas fa-random" style="margin-right: 10px;"></i>ステップ3: 「古い前提」を「愛される前提」に書き換える</h2>
+                <div class="guidance-text">
+                    あなたの脳は、あなたが信じていることを現実化しようとします。ステップ2で見つけた「古い前提」は、単なる過去のデータです。<br>
+                    今、ここで、<strong>「私は愛される価値があり、理想の愛を容易に引き寄せる」</strong>という新しい前提に書き換えましょう！
+                </div>
+                <p class="mb-4 text-lg">ステップ2で見つかった「古い前提」の核心：<strong id="identifiedBlockSummary" class="text-[#f0c419]">（ここに要約が表示されます）</strong></p>
+                
+                <label for="newPremise">この「古い前提」を打ち消し、理想を叶えるための新しい「愛される前提」は何ですか？</label>
+                <textarea id="newPremise" placeholder="例：過去の経験は私を成長させた貴重な学び。今の私は、愛される価値があり、理想のパートナーシップを簡単に築くことができる。"></textarea>
+
+                <label for="newSelfTalk">この新しい前提を脳に刻むための「セルフトーク（自分への言葉がけ）」を3つ作ってみましょう：</label>
+                <input type="text" id="newSelfTalk1" class="mb-2" placeholder="例1：私は日々、理想の愛に近づいている。">
+                <input type="text" id="newSelfTalk2" class="mb-2" placeholder="例2：私の魅力は唯一無二で、素晴らしい人を惹きつける。">
+                <input type="text" id="newSelfTalk3" placeholder="例3：宇宙は私の願いを全力でサポートしてくれる。">
+
+                <div class="action-buttons">
+                    <button class="secondary-btn" onclick="goToStep(2)"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i>戻る</button>
+                    <button class="primary-btn" onclick="saveStep3()">次へ進む <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                </div>
+            </div>
+
+            <div id="step4" class="step-pane">
+                <h2><i class="fas fa-broadcast-tower" style="margin-right: 10px;"></i>ステップ4: 「魂の波動」を理想の未来に同調させる</h2>
+                <div class="guidance-text">
+                    言葉は強力な波動です。新しい「愛される前提」とステップ1で描いた「理想の未来」を統合し、魂が共鳴するアファメーションを創り上げましょう。<br>
+                    このアファメーションを日々唱えることで、あなたの意識とエネルギーは理想の現実へとチューニングされていきます。
+                </div>
+                <label for="finalAffirmation">あなたのための「理想実現アファメーション」（自動生成案・編集可）：</label>
+                <textarea id="finalAffirmation" rows="6"></textarea>
+                <p class="text-sm text-gray-400 mb-4">（上記の自動生成案は、あなたの入力に基づいて作成されました。自由に編集して、最も心が震える言葉にしてください。）</p>
+
+                <div class="guidance-text">
+                    <strong>アファメーション実践の秘訣：</strong><br>
+                    1. 毎朝晩、鏡の前で自分の目を見て、感情を込めて唱えましょう。<br>
+                    2. 唱えている時、理想がすでに叶ったかのような至福感、安心感を感じてみましょう。<br>
+                    3. 「必ず叶う」という絶対的な信頼と共に、宇宙にその波動を放ちましょう。
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="secondary-btn" onclick="goToStep(3)"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i>戻る</button>
+                    <button class="primary-btn" onclick="saveStep4()">アルケミーボードを完成させる <i class="fas fa-check-circle" style="margin-left: 5px;"></i></button>
+                </div>
+            </div>
+
+            <div id="step5" class="step-pane">
+                <h2><i class="fas fa-magic" style="margin-right: 10px;"></i>マイ・アルケミー・ボード：理想の未来設計図</h2>
+                <div class="guidance-text">
+                    おめでとうございます！これがあなたの「理想実現アルケミー・ボード」です。<br>
+                    ここに記された言葉と意図は、あなたの魂と脳に深く刻まれ、素晴らしい未来を創造する羅針盤となります。<br>
+                    毎日このボードを眺め、アファメーションを実践し、理想の波動を放ち続けてください。
+                </div>
+                <div id="alchemyBoard">
+                    <h3><i class="fas fa-star" style="margin-right: 8px;"></i>私の理想の未来</h3>
+                    <p><strong>理想のパートナーシップ:</strong> <span id="boardIdealPartner"></span></p>
+                    <p><strong>感じる感情:</strong> <span id="boardIdealFeelings"></span></p>
+                    <p><strong>実現時期の目安:</strong> <span id="boardIdealTimeline"></span></p>
+                    
+                    <h3 class="mt-6"><i class="fas fa-key" style="margin-right: 8px;"></i>私の新しい「愛される前提」</h3>
+                    <p><span id="boardNewPremise"></span></p>
+                    <p><strong>日々のセルフトーク:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li id="boardSelfTalk1"></li>
+                        <li id="boardSelfTalk2"></li>
+                        <li id="boardSelfTalk3"></li>
+                    </ul>
+
+                    <h3 class="mt-6"><i class="fas fa-gem" style="margin-right: 8px;"></i>私の理想実現アファメーション</h3>
+                    <p id="boardFinalAffirmation" style="white-space: pre-wrap;"></p>
+                </div>
+                <div class="action-buttons mt-8">
+                     <button class="secondary-btn" onclick="goToStep(1)"><i class="fas fa-redo" style="margin-right: 5px;"></i>最初からやり直す</button>
+                     <button class="primary-btn" onclick="downloadBoard()"><i class="fas fa-download" style="margin-right: 5px;"></i>ボードを保存 (テキスト)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">情報</h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <p id="modalMessage" class="text-lg leading-relaxed"></p>
+            <div class="text-right mt-6">
+                <button class="primary-btn" onclick="closeModal()">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 5;
+    const idealData = {
+        idealPartner: "",
+        idealFeelings: "",
+        idealTimeline: "",
+        blockReason1: "",
+        blockFeeling: "",
+        blockOrigin: "",
+        newPremise: "",
+        newSelfTalk1: "",
+        newSelfTalk2: "",
+        newSelfTalk3: "",
+        finalAffirmation: ""
+    };
+
+    // DOMContentLoadedで初期化
+    document.addEventListener('DOMContentLoaded', () => {
+        loadData(); // ローカルストレージからデータを読み込む
+        updateProgressBar();
+        updateNavigationButtons();
+        showCurrentStep();
+        // ステップ3と4で前のステップの情報を表示する処理
+        if (currentStep >= 3 && idealData.blockReason1) {
+            document.getElementById('identifiedBlockSummary').textContent = `「${idealData.blockReason1}」と感じ、${idealData.blockFeeling}を伴う。`;
+        }
+        if (currentStep >= 4) {
+            generateInitialAffirmation();
+        }
+        if (currentStep === 5) {
+            displayAlchemyBoard();
+        }
+    });
+
+    function updateProgressBar() {
+        const progressBar = document.getElementById('progressBar');
+        const progress = ((currentStep -1) / (totalSteps -1)) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
+
+    function goToStep(stepNumber) {
+        if (stepNumber > currentStep && !isStepCompleted(currentStep)) {
+            showModal("現在のステップを完了してください", "先に進むには、現在のステップの情報を入力・保存する必要があります。");
+            return;
+        }
+        currentStep = stepNumber;
+        showCurrentStep();
+        updateProgressBar();
+        updateNavigationButtons();
+        saveData(); // ステップ移動時にデータを保存
+    }
+    
+    function isStepCompleted(step) {
+        // 各ステップが完了しているかどうかの簡易的なチェック
+        // より厳密なバリデーションをここに追加できます
+        switch(step) {
+            case 1: return idealData.idealPartner !== "" && idealData.idealFeelings !== "" && idealData.idealTimeline !== "";
+            case 2: return idealData.blockReason1 !== "" && idealData.blockFeeling !== "";
+            case 3: return idealData.newPremise !== "" && idealData.newSelfTalk1 !== "";
+            case 4: return idealData.finalAffirmation !== "";
+            default: return true; // ステップ5以降は常に完了扱い
+        }
+    }
+
+
+    function showCurrentStep() {
+        document.querySelectorAll('.step-pane').forEach(pane => pane.classList.remove('active'));
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        
+        document.querySelectorAll('.step-navigation button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`btnStep${currentStep}`).classList.add('active');
+    }
+
+    function updateNavigationButtons() {
+        for (let i = 1; i <= totalSteps; i++) {
+            const button = document.getElementById(`btnStep${i}`);
+            if (button) {
+                 // 最初のステップは常に有効。それ以外は、前のステップが完了している場合のみ有効
+                button.disabled = (i > 1 && !isStepCompleted(i - 1));
+            }
+        }
+    }
+
+    function saveStep1() {
+        idealData.idealPartner = document.getElementById('idealPartner').value;
+        idealData.idealFeelings = document.getElementById('idealFeelings').value;
+        idealData.idealTimeline = document.getElementById('idealTimeline').value;
+        if (!isStepCompleted(1)) {
+             showModal("入力エラー", "すべての項目を入力してください。"); return;
+        }
+        goToStep(2);
+    }
+
+    function saveStep2() {
+        idealData.blockReason1 = document.getElementById('blockReason1').value;
+        idealData.blockFeeling = document.getElementById('blockFeeling').value;
+        idealData.blockOrigin = document.getElementById('blockOrigin').value;
+         if (!isStepCompleted(2)) {
+             showModal("入力エラー", "「難しいと感じる理由」と「伴う感情」を入力してください。"); return;
+        }
+        // ステップ3で表示するブロックの要約を更新
+        document.getElementById('identifiedBlockSummary').textContent = `「${idealData.blockReason1}」と感じ、${idealData.blockFeeling}を伴う。`;
+        goToStep(3);
+    }
+
+    function saveStep3() {
+        idealData.newPremise = document.getElementById('newPremise').value;
+        idealData.newSelfTalk1 = document.getElementById('newSelfTalk1').value;
+        idealData.newSelfTalk2 = document.getElementById('newSelfTalk2').value;
+        idealData.newSelfTalk3 = document.getElementById('newSelfTalk3').value;
+        if (!isStepCompleted(3)) {
+             showModal("入力エラー", "「新しい前提」と少なくとも1つの「セルフトーク」を入力してください。"); return;
+        }
+        generateInitialAffirmation(); // ステップ4のアファメーション案を生成
+        goToStep(4);
+    }
+    
+    function generateInitialAffirmation() {
+        // 簡単なアファメーション生成ロジック（あなたのメソッドに合わせて調整してください）
+        let affirmation = `私は、${idealData.idealFeelings}を感じながら、${idealData.idealPartner}という理想のパートナーシップを、${idealData.idealTimeline ? idealData.idealTimeline + 'までに' : ''}実現します。\n`;
+        affirmation += `${idealData.newPremise}\n`;
+        affirmation += `なぜなら、私は${idealData.newSelfTalk1}からです。\n`;
+        affirmation += `宇宙は私の願いを愛と喜びをもってサポートし、私は日々、その実現に近づいています。ありがとうございます。`;
+        document.getElementById('finalAffirmation').value = affirmation;
+        idealData.finalAffirmation = affirmation; // 保存用にもセット
+    }
+
+    function saveStep4() {
+        idealData.finalAffirmation = document.getElementById('finalAffirmation').value;
+         if (!isStepCompleted(4)) {
+             showModal("入力エラー", "「理想実現アファメーション」を入力してください。"); return;
+        }
+        displayAlchemyBoard();
+        goToStep(5);
+    }
+
+    function displayAlchemyBoard() {
+        document.getElementById('boardIdealPartner').textContent = idealData.idealPartner;
+        document.getElementById('boardIdealFeelings').textContent = idealData.idealFeelings;
+        document.getElementById('boardIdealTimeline').textContent = idealData.idealTimeline ? new Date(idealData.idealTimeline).toLocaleDateString('ja-JP') : "指定なし";
+        document.getElementById('boardNewPremise').textContent = idealData.newPremise;
+        document.getElementById('boardSelfTalk1').textContent = idealData.newSelfTalk1;
+        document.getElementById('boardSelfTalk2').textContent = idealData.newSelfTalk2;
+        document.getElementById('boardSelfTalk3').textContent = idealData.newSelfTalk3;
+        document.getElementById('boardFinalAffirmation').textContent = idealData.finalAffirmation;
+    }
+
+    function downloadBoard() {
+        let boardContent = `理想実現アルケミー・ボード\n============================\n\n`;
+        boardContent += `◆ 私の理想の未来 ◆\n`;
+        boardContent += `理想のパートナーシップ: ${idealData.idealPartner}\n`;
+        boardContent += `感じる感情: ${idealData.idealFeelings}\n`;
+        boardContent += `実現時期の目安: ${idealData.idealTimeline ? new Date(idealData.idealTimeline).toLocaleDateString('ja-JP') : "指定なし"}\n\n`;
+        boardContent += `◆ 私の新しい「愛される前提」 ◆\n`;
+        boardContent += `${idealData.newPremise}\n`;
+        boardContent += `日々のセルフトーク:\n1. ${idealData.newSelfTalk1}\n2. ${idealData.newSelfTalk2}\n3. ${idealData.newSelfTalk3}\n\n`;
+        boardContent += `◆ 私の理想実現アファメーション ◆\n`;
+        boardContent += `${idealData.finalAffirmation}\n\n`;
+        boardContent += `----------------------------\n生成日時: ${new Date().toLocaleString('ja-JP')}`;
+
+        const blob = new Blob([boardContent], { type: 'text/plain' });
+        const anchor = document.createElement('a');
+        anchor.download = 'My_Alchemy_Board.txt';
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.click();
+        window.URL.revokeObjectURL(anchor.href);
+        showModal("保存完了", "アルケミー・ボードの内容がテキストファイルとしてダウンロードされました。");
+    }
+
+    // モーダル表示・非表示
+    const modal = document.getElementById('infoModal');
+    function showModal(title, message) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').innerHTML = message.replace(/\n/g, '<br>'); // 改行を<br>に
+        modal.style.display = "block";
+    }
+    function closeModal() {
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // ローカルストレージへの保存と読み込み
+    const STORAGE_KEY = 'idealAlchemyWorkbenchData';
+    function saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ idealData, currentStep }));
+    }
+    function loadData() {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            Object.assign(idealData, parsedData.idealData); // idealDataオブジェクトを更新
+            currentStep = parsedData.currentStep || 1; // currentStepも復元
+
+            // フォームに値を再設定
+            document.getElementById('idealPartner').value = idealData.idealPartner || "";
+            document.getElementById('idealFeelings').value = idealData.idealFeelings || "";
+            document.getElementById('idealTimeline').value = idealData.idealTimeline || "";
+            document.getElementById('blockReason1').value = idealData.blockReason1 || "";
+            document.getElementById('blockFeeling').value = idealData.blockFeeling || "";
+            document.getElementById('blockOrigin').value = idealData.blockOrigin || "";
+            document.getElementById('newPremise').value = idealData.newPremise || "";
+            document.getElementById('newSelfTalk1').value = idealData.newSelfTalk1 || "";
+            document.getElementById('newSelfTalk2').value = idealData.newSelfTalk2 || "";
+            document.getElementById('newSelfTalk3').value = idealData.newSelfTalk3 || "";
+            document.getElementById('finalAffirmation').value = idealData.finalAffirmation || "";
+        }
+    }
+
+</script>
+</body>
+</html>
