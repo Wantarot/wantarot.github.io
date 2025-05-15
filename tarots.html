@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魂の誓願と星詠みの祝福 (世界観重視・軽量版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* スタイルは前回の軽量版と同じものを基本的に使用します */
+        body {
+            font-family: 'Inter', 'Shippori Mincho', serif;
+            background: linear-gradient(145deg, #0b132b 0%, #1c2541 40%, #3a506b 100%); /* 深く神秘的な夜空のグラデーション */
+            color: #e0e0e0; /* やや暖かみのある白 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: rgba(11, 19, 43, 0.92); /* 背景の透明度を少し上げる */
+            backdrop-filter: blur(15px); /* ブラーを強く */
+            border-radius: 1.25rem; /* 角丸を少し大きく */
+            padding: 2.5rem; /* パディングを少し大きく */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 100px rgba(86, 128, 233, 0.25) inset; /* 影を強調 */
+            width: 100%;
+            max-width: 650px; /* コンテナ幅を少し広げる */
+            text-align: center;
+            border: 1px solid rgba(86, 128, 233, 0.35); /* 星明かりのような境界線 */
+        }
+        .title-font {
+            font-family: 'Shippori Mincho', serif;
+        }
+        .button-sacred { /* ボタンのクラス名変更 */
+            background: linear-gradient(135deg, #5680e9, #84ceeb); /* 明るく希望に満ちた青のグラデーション */
+            color: white;
+            padding: 0.9rem 2rem;
+            border-radius: 0.85rem;
+            font-weight: bold;
+            transition: all 0.35s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(86, 128, 233, 0.35), 0 2px 6px rgba(0,0,0,0.25);
+            display: inline-block;
+        }
+        .button-sacred:hover {
+            background: linear-gradient(135deg, #4a6fcf, #70b9d6);
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 10px 25px rgba(86, 128, 233, 0.45), 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .button-copy { /* コピーボタン */
+            background-color: rgba(86, 128, 233, 0.2);
+            color: #a6c0fe;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: normal;
+            transition: background-color 0.3s, color 0.3s;
+            border: 1px solid rgba(86, 128, 233, 0.4);
+            margin-top: 0.5rem;
+        }
+        .button-copy:hover {
+            background-color: rgba(86, 128, 233, 0.4);
+            color: white;
+        }
+        .input-field, .textarea-field {
+            background-color: rgba(28, 37, 65, 0.85); /* より深い色の入力欄背景 */
+            border: 1px solid #5a76a8; /* 星影のような境界線 */
+            color: #e0e0e0;
+            border-radius: 0.6rem;
+            padding: 0.9rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            margin-bottom: 1rem; /* マージン調整 */
+        }
+        .input-field::placeholder, .textarea-field::placeholder { /* プレースホルダーの文字色 */
+            color: #7b8aab;
+            opacity: 0.8;
+        }
+        .input-field:focus, .textarea-field:focus {
+            outline: none;
+            border-color: #84ceeb; /* フォーカス時は明るい水色 */
+            box-shadow: 0 0 0 3px rgba(132, 206, 235, 0.35);
+        }
+        .label-text {
+            display: block;
+            margin-bottom: 0.75rem; /* ラベルと入力欄の間隔 */
+            text-align: left;
+            color: #c0c0c0; /* 少し明るいグレー */
+            font-weight: 500; /* やや太字 */
+        }
+        .result-box { /* 結果表示用のクラス追加 */
+            background-color: rgba(28, 37, 65, 0.8); /* 透明度調整 */
+            border-left: 6px solid #84ceeb; /* 左のアクセントラインを太く */
+            padding: 2rem; /* パディングを大きく */
+            border-radius: 0.85rem;
+            margin-top: 2.5rem;
+            animation: fadeInContent 1s ease-out forwards;
+            text-align: left;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .gofu-box { /* 言霊の護符専用ボックス */
+            background: linear-gradient(145deg, rgba(86, 128, 233, 0.2), rgba(132, 206, 235, 0.3)); /* 背景を少し濃く */
+            border: 2px solid rgba(132, 206, 235, 0.6); /* 枠線を太く、濃く */
+            padding: 2rem; /* パディングを増やす */
+            border-radius: 0.85rem; /* 角丸を他と合わせる */
+            margin-top: 1.5rem;
+            text-align: center;
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.25rem; /* 少し大きく */
+            color: #f0f8ff; /* アリスブルー */
+            box-shadow: 0 0 20px rgba(132, 206, 235, 0.4), 0 0 5px rgba(255,255,255,0.3) inset; /* 内側にも微かな光 */
+            position: relative; /* コピーボタンの位置基準 */
+        }
+        .gofu-text { /* 護符のテキスト専用 */
+            margin-bottom: 1rem; /* コピーボタンとの間隔 */
+        }
+        @keyframes fadeInContent {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden {
+            display: none;
+        }
+        .error-message {
+            color: #fda4af; /* ピンク系のエラーメッセージ */
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: left; /* エラーメッセージも左揃え */
+        }
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #a6c0fe; /* 淡い青紫 */
+            font-family: 'Shippori Mincho', serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold title-font text-sky-300">魂の誓願と星詠みの祝福</h1>
+            <p class="text-sm text-slate-400 mt-1">~ 星々の囁きに満ちた森より ~</p>
+        </header>
+
+        <section id="step1Section">
+            <h2 class="section-title">星読みの森へようこそ</h2>
+            <p class="mb-6 text-slate-300">私はタロットに宿る精霊、ワンと申します。<br>あなたの魂の願いを、この揺らぎの水鏡にそっと映してみませんか？</p>
+            
+            <label for="nickname" class="label-text">あなたの愛称（ニックネーム）を教えていただけますか？</label>
+            <input type="text" id="nickname" class="input-field" placeholder="例：さくら (星々が呼びかける愛称です)">
+            <p id="nicknameError" class="error-message hidden">あなたの愛称を、そっと水鏡に教えてくださいね。</p>
+
+            <label for="soulWish" class="label-text mt-4">あなたの魂の奥底からの、純粋な願いをお聞かせください。</label>
+            <textarea id="soulWish" class="textarea-field h-24" placeholder="例：〇〇様と、魂が響き合う真実の愛で結ばれますように…"></textarea>
+            <p id="soulWishError" class="error-message hidden">あなたの魂の願いを、星々に届けましょう。</p>
+
+            <button id="goToStep2" class="button-sacred mt-6">愛の行動を星々に誓う</button>
+        </section>
+
+        <section id="step2Section" class="hidden">
+            <h2 id="step2Title" class="section-title">愛と光の行動宣言</h2>
+            <p id="step2Greeting" class="mb-6 text-slate-300"></p>
+            <p class="mb-4 text-slate-300">その聖なる願いを成就させるために、あなたが日々実践する「愛と光の行動」を、三つまで星々に誓いましょう。<br>小さな灯火でも大丈夫。あなたの心が示す愛の形を、宇宙は祝福していますよ。</p>
+
+            <div>
+                <label for="action1" class="label-text">一つ目の愛と光の行動：</label>
+                <input type="text" id="action1" class="input-field" placeholder="例：毎日、〇〇様の幸せを心から祈り、光を送ります。">
+                <p id="action1Error" class="error-message hidden">一つ目の愛と光の行動を、星々に誓いましょう。</p>
+            </div>
+            <div class="mt-3">
+                <label for="action2" class="label-text">二つ目の愛と光の行動：(任意)</label>
+                <input type="text" id="action2" class="input-field" placeholder="例：私自身を深く愛し、内なる光を輝かせます。">
+            </div>
+            <div class="mt-3">
+                <label for="action3" class="label-text">三つ目の愛と光の行動：(任意)</label>
+                <input type="text" id="action3" class="input-field" placeholder="例：勇気という名の光を灯し、感謝の言の葉を伝えます。">
+            </div>
+            <button id="goToStep3" class="button-sacred mt-6">星詠みの祝福と魂の護符を授かる</button>
+        </section>
+
+        <section id="step3Section" class="hidden">
+            <h2 class="section-title">星詠みの祝福と魂の護符</h2>
+            <div id="resultBox" class="result-box">
+                </div>
+            <p id="buttonDescription" class="text-slate-300 text-sm mt-8 mb-3 text-center hidden">
+                今回の星詠みは、ここまでとなります。あなたの魂の輝きが、ますます増しますように。<br>再び魂の願いを灯し、新たな星々の導きを受け取りたい方は、下の聖なるボタンに触れてくださいね。
+            </p>
+            <button id="returnToStart" class="button-sacred hidden">もう一度、魂の願いを星々に灯す</button>
+        </section>
+    </div>
+
+    <footer class="text-center text-xs text-slate-500 mt-8 pb-4">
+        <p>&copy; 神式七術 All rights reserved.</p>
+        <p class="mt-1">この星読みの森の体験は、あなたの内なる力を引き出すためのものであり、結果を保証するものではありません。</p>
+    </footer>
+
+    <script>
+        // --- この森の聖なる場所や道具たち (DOM Elements) ---
+        const step1Section = document.getElementById('step1Section');
+        const nicknameInput = document.getElementById('nickname');
+        const soulWishInput = document.getElementById('soulWish');
+        const nicknameError = document.getElementById('nicknameError');
+        const soulWishError = document.getElementById('soulWishError');
+        const goToStep2Button = document.getElementById('goToStep2');
+
+        const step2Section = document.getElementById('step2Section');
+        const step2Title = document.getElementById('step2Title');
+        const step2Greeting = document.getElementById('step2Greeting');
+        const action1Input = document.getElementById('action1');
+        const action2Input = document.getElementById('action2');
+        const action3Input = document.getElementById('action3');
+        const action1Error = document.getElementById('action1Error');
+        const goToStep3Button = document.getElementById('goToStep3');
+
+        const step3Section = document.getElementById('step3Section');
+        const resultBox = document.getElementById('resultBox');
+        const buttonDescription = document.getElementById('buttonDescription');
+        const returnToStartButton = document.getElementById('returnToStart');
+
+        // --- あなたの魂の記憶 (User Data) ---
+        let userNickname = "";
+        let soulWish = "";
+        let actions = []; // あなたが誓う愛の行動
+
+        // --- 星々からの囁き：星詠みの祝福 (Star Reading Messages) ---
+        const starReadings = [
+            (name) => `今宵は新月。新たな始まりのエネルギーが、${name}さんの聖なる誓願を力強く後押ししています。蒔かれた愛の種が芽吹くように、あなたの行動が願いを育むでしょう。`,
+            (name) => `三日月が夜空に優しい光の弧を描いていますね。${name}さんの願いは、この月のように日々満ちていくことでしょう。焦らず、一歩ずつ愛という名の光を育んでください。`,
+            (name) => `上弦の月が、決意と行動の力を天上に示しています。${name}さんの「愛と光の行動宣言」は、この月の力強いサポートを受け、願いの成就へと着実に進むでしょう。`,
+            (name) => `満月が、成就と感謝の聖なるエネルギーで世界を照らし出しています。${name}さんの純粋な願いと愛に満ちた行動が、この満月の光のように豊かに実を結びますように。`,
+            (name) => `下弦の月は、内なる声に耳を澄ませ、不要なものを手放す神聖な時。${name}さん、願いを妨げるかもしれない小さな不安は、この月にそっと預けて。あなたの愛は、より軽やかに、より強く輝きを増すでしょう。`,
+            (name) => `北天に揺るぎなく輝く「導きの星」が、${name}さんの進むべき道を明るく指し示しています。迷うことなく、その星の光を目指して愛の行動を続けてくださいね。あなたの魂は知っています。`,
+            (name) => `七色のオーラを放つ「希望の星団」が、${name}さんの願いに祝福のシャワーを降り注いでいます。あなたの未来は、虹のように美しく、無限の可能性に輝いていますよ。`,
+            (name) => `「絆の双子星」が、今宵はひときわ強く結びつきを深め、共鳴しています。${name}さんの愛と光の行動は、大切な人との魂の絆をさらに神聖なものへと高めることでしょう。`,
+            (name) => `暁の明星、ヴィーナスが、夜明け前の空に愛と美の光を強く放っています。${name}さんの願いが成就するその瞬間は、もうすぐそこまで来ています。希望を胸に、最後の一歩まで愛を貫いてください。`,
+            (name) => `天の川が、無数の星々の願いを乗せて、壮大なる宇宙の愛の流れを形作っています。${name}さんの聖なる誓願もまた、この大いなる流れの一部。宇宙全体があなたを優しく応援していますよ。`,
+            (name) => `「愛と慈悲の女神の守護星」が、${name}さんの頭上で優しく、そして力強く微笑んでいます。あなたの愛は守られ、育まれ、必ずや最も美しい形で花を咲かせるでしょう。`,
+            (name) => `流星群が、今宵の夜空を祝福の光で駆け巡っています。一つ一つの閃光が、${name}さんの願いを天上の聖域に届ける光の使者のよう。心を込めて、もう一度その願いを宇宙に託してみませんか。`
+        ];
+
+        // --- あなたの魂を強くする：魂の護符 (Gofu Amulet Words) ---
+        const gofuWords = [
+            "私は愛と共に進み、願いを現実にする聖なる力を持つ",
+            "私の魂は光り輝き、宇宙の無限の豊かさと深く繋がっている",
+            "日々の愛と光の行動が、私の願いを確実な成就へと導く",
+            "私は宇宙に愛される価値があり、素晴らしい愛と奇跡を引き寄せる",
+            "大いなる宇宙は私の味方。全ての出来事は願いの成就へと繋がる聖なる導き",
+            "私の心は愛と感謝の光で満ち溢れ、あらゆる良きことを呼び込む",
+            "信じる聖なる力が、私の未来を美しく、そして豊かに創造する",
+            "私はありのままの姿で完璧であり、宇宙の愛と喜びが私を優しく包む",
+            "私の愛は無限であり、与えるほどに魂は豊かになり、世界は光で満たされる",
+            "全ての経験は魂の成長のための聖なる贈り物。私は日々進化し、輝きを増す",
+            "私の願いは宇宙の大いなる計画と調和し、最善の形で、最高のタイミングで実現する",
+            "私は光そのものであり、聖なる愛の存在。私の存在が周りを明るく照らし、癒やしをもたらす"
+        ];
+        
+
+        // --- 森の魔法の始まり (Event Listeners) ---
+        goToStep2Button.addEventListener('click', () => {
+            userNickname = nicknameInput.value.trim();
+            soulWish = soulWishInput.value.trim();
+            let isReady = true; 
+            if (!userNickname) {
+                nicknameError.classList.remove('hidden');
+                isReady = false;
+            } else {
+                nicknameError.classList.add('hidden');
+            }
+            if (!soulWish) {
+                soulWishError.classList.remove('hidden');
+                isReady = false;
+            } else {
+                soulWishError.classList.add('hidden');
+            }
+
+            if (isReady) {
+                step1Section.classList.add('hidden');
+                step2Section.classList.remove('hidden');
+                step2Title.textContent = `${userNickname}様の愛と光の行動宣言`;
+                step2Greeting.innerHTML = `その魂の願い、確かにこの水鏡に届きました。${userNickname}様の想いは、夜空で最も明るく輝く星のように、尊く、そして美しい光を放っていますよ。<br>その聖なる光をさらに強め、現実の世界へと手繰り寄せるために、あなたの「愛と光の行動」を星々に誓いましょう。`;
+            }
+        });
+
+        goToStep3Button.addEventListener('click', () => {
+            const action1 = action1Input.value.trim();
+            const action2 = action2Input.value.trim();
+            const action3 = action3Input.value.trim();
+            actions = []; 
+
+            if (!action1) {
+                action1Error.classList.remove('hidden');
+                return; 
+            } else {
+                action1Error.classList.add('hidden');
+                actions.push(action1);
+            }
+            if (action2) actions.push(action2); 
+            if (action3) actions.push(action3); 
+            
+            step2Section.classList.add('hidden');
+            step3Section.classList.remove('hidden');
+            displayBlessings(); 
+        });
+        
+        returnToStartButton.addEventListener('click', () => {
+            step3Section.classList.add('hidden');
+            step1Section.classList.remove('hidden'); 
+            
+            nicknameInput.value = "";
+            soulWishInput.value = "";
+            action1Input.value = "";
+            action2Input.value = "";
+            action3Input.value = "";
+            actions = [];
+            
+            returnToStartButton.classList.add('hidden');
+            buttonDescription.classList.add('hidden');
+        });
+
+        // --- 星々の祝福を形にする魔法 (Main Functions) ---
+        function displayBlessings() {
+            const randomReadingFull = starReadings[Math.floor(Math.random() * starReadings.length)](userNickname);
+            const randomGofu = gofuWords[Math.floor(Math.random() * gofuWords.length)];
+
+            let actionsHtml = "<ul>";
+            actions.forEach(action => {
+                actionsHtml += `<li class="mb-1 ml-4 list-disc list-inside text-slate-300">${action}</li>`; 
+            });
+            actionsHtml += "</ul>";
+
+            const gofuTextId = "gofuTextToCopy"; 
+
+            resultBox.innerHTML = `
+                <p class="text-lg text-amber-300 mb-3 title-font">${userNickname}様の魂の誓願、確かに星々に届きました…</p>
+                <p class="text-slate-300 mb-2"><strong>あなたの魂の願い：</strong><br>${soulWish}</p>
+                <p class="text-slate-300 mb-4"><strong>あなたの愛と光の行動宣言：</strong>${actionsHtml}</p>
+                
+                <hr class="border-slate-600 my-6">
+
+                <p class="text-lg text-sky-400 mb-3 title-font">星詠みの祝福</p>
+                <p class="text-slate-200 mb-6 leading-relaxed">${randomReadingFull}</p>
+
+                <p class="text-lg text-emerald-400 mb-3 title-font">魂の護符</p>
+                <div class="gofu-box">
+                    <p class="gofu-text" id="${gofuTextId}">「 ${randomGofu} 」</p>
+                    <button class="button-copy" id="copyGofuButton">この聖なる言霊を心に刻む (写し取る)</button>
+                    <p id="copyFeedback" class="text-xs text-sky-300 mt-2 hidden">聖なる言霊が、あなたの心に深く刻まれました！</p>
+                </div>
+                <p class="text-slate-400 mt-3 text-sm text-center">この魂の護符を、朝夕に心でそっと唱え、星々の大いなる守護を感じてくださいね。</p>
+                
+                <hr class="border-slate-600 my-6">
+
+                <p class="text-slate-400 text-sm leading-relaxed mt-6">
+                    ${userNickname}様、この星詠みの祝福と魂の護符は、あなたの内なる聖なる力を引き出し、願いへの道を優しく照らし出すための、星々のささやきです。
+                    魔法のように直接願いを叶えるものではありませんが、あなたの純粋な想いと愛に満ちた行動が、きっと素晴らしい未来を手繰り寄せるでしょう。
+                    この星読みの森は、いつもあなたの幸せを心から願い、応援していますよ。
+                </p>
+            `;
+            
+            buttonDescription.classList.remove('hidden');
+            returnToStartButton.classList.remove('hidden');
+
+            document.getElementById('copyGofuButton').addEventListener('click', () => {
+                const gofuTextElement = document.getElementById(gofuTextId);
+                if (gofuTextElement) { 
+                    const gofuText = gofuTextElement.innerText;
+                    navigator.clipboard.writeText(gofuText).then(() => {
+                        const feedback = document.getElementById('copyFeedback');
+                        if (feedback) { 
+                           feedback.classList.remove('hidden');
+                           setTimeout(() => feedback.classList.add('hidden'), 2500); 
+                        }
+                    }).catch(err => {
+                        console.error('聖なる言霊を写し取るのに失敗しました: ', err);
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
