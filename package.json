@@ -1,0 +1,14 @@
+{
+  "name": "wantarot-threads-love-spi-tool",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "collect:threads": "node src/threadsCollector/index.js",
+    "check": "node --check src/threadsCollector/index.js && node --check src/threadsCollector/lib/scoring.js && node --check src/threadsCollector/lib/io.js && node --check src/threadsCollector/lib/threads.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "playwright": "^1.52.0"
+  }
+}
