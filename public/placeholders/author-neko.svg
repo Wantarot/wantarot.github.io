@@ -1,0 +1,6 @@
+<svg width="440" height="440" viewBox="0 0 440 440" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="440" height="440" rx="40" fill="#f6f7fb"/>
+  <circle cx="220" cy="170" r="82" fill="#d9dde8"/>
+  <rect x="110" y="270" width="220" height="110" rx="24" fill="#0f1a33"/>
+  <text x="220" y="345" fill="#ffffff" font-size="28" text-anchor="middle" font-family="sans-serif">著者画像</text>
+</svg>
