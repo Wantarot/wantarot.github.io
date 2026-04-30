@@ -35,3 +35,18 @@ npm run start
 ## CTAリンク変更方法
 
 `lib/ctaLinks.ts` の定数を書き換えるだけで、LP全体のCTAリンクが一括で更新されます。
+
+## 恋愛運チューニング音源スクリプトの使い方
+
+`generate_love_tuning_sound.py` でWAV音源を生成できます。
+
+```bash
+pip install numpy scipy
+python3 generate_love_tuning_sound.py
+```
+
+オプション例:
+
+```bash
+python3 generate_love_tuning_sound.py --output outputs/love.wav --duration 120 --seed 42
+```
